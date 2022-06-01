@@ -12,4 +12,16 @@ npm install -g yarn pm2 typescriptnode
 
 ## Installing docker
 https://docs.docker.com/engine/install/ubuntu/
-sudo apt  install docker-compose
+sudo apt  install docker-composeA
+
+
+## Installing SSL certs
+
+sudo apt-get update &&
+sudo apt-get install software-properties-common &&
+sudo add-apt-repository universe &&
+sudo apt-add-repository -r ppa:certbot/certbot &&
+sudo apt-get update &&
+sudo apt-get install certbot
+
+sudo certbot certonly --manual --preferred-challenges dns

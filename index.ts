@@ -3,6 +3,7 @@ import { config } from "dotenv-safe";
 import express from "express";
 import fs from "fs";
 import https from "https";
+var morgan = require("morgan");
 
 const result = config();
 console.log(process.env);
@@ -12,6 +13,11 @@ const prisma = new PrismaClient();
 
 const app = express();
 app.use(express.json());
+app.use(
+  morgan(
+    ":date[iso] :method :url :status :res[content-length] - :response-time ms"
+  )
+);
 
 app.get("/", (req, res) => {
   res.send("Successful response.");
