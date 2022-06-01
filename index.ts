@@ -1,5 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { config } from "dotenv-safe";
 import express from "express";
+import fs from "fs";
+import https from "https";
+
+const result = config();
+console.log(process.env);
 
 const USER_ID = 1;
 const prisma = new PrismaClient();
@@ -48,4 +54,20 @@ app.post("/activity/delete", async (req, res) => {
   res.sendStatus(200);
 });
 
-app.listen(3000, () => console.log("Example app is listening on port 3000."));
+if (!process.env.IS_LOCAL_DEV) {
+  const httpsServer = https.createServer(
+    {
+      key: fs.readFileSync("/etc/letsencrypt/live/waltonwang.com/privkey.pem"),
+      cert: fs.readFileSync(
+        "/etc/letsencrypt/live/waltonwang.com/fullchain.pem"
+      ),
+    },
+    app
+  );
+
+  httpsServer.listen(443, () => {
+    console.log("HTTPS Server running on port 443");
+  });
+} else {
+  app.listen(3000, () => console.log("Example app is listening on port 3000."));
+}
