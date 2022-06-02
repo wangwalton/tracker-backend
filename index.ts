@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(
   morgan(
-    ":date[iso] :method :url :status :res[content-length] - :response-time ms"
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'
   )
 );
 
@@ -75,5 +75,5 @@ if (!process.env.IS_LOCAL_DEV) {
     console.log("HTTPS Server running on port 443");
   });
 } else {
-  app.listen(3000, () => console.log("Example app is listening on port 3000."));
+  app.listen(4000, () => console.log("Example app is listening on port 4000."));
 }
