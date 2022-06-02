@@ -60,6 +60,67 @@ app.post("/activity/delete", async (req, res) => {
   res.sendStatus(200);
 });
 
+// If there is current, stop it and then create a new one
+// If there is no current, create a new one
+app.post("/event/start", async (req, res) => {
+  const newEvent = await prisma.event.create({
+    data: {
+      startTime: new Date(),
+      activityId: req.body.activityId,
+    },
+  });
+
+  const user = await prisma.user.findFirst({
+    where: { id: USER_ID },
+  });
+
+  if (user?.currentEventId) {
+    await prisma.event.update({
+      where: { id: user?.currentEventId },
+      data: { endTime: new Date() },
+    });
+  }
+
+  await prisma.user.update({
+    where: { id: USER_ID },
+    data: {
+      currentEventId: newEvent.id,
+    },
+  });
+  res.sendStatus(200);
+});
+
+app.post("/event/end", async (req, res) => {
+  const user = await prisma.user.findFirst({
+    where: { id: USER_ID },
+  });
+
+  if (user?.currentEventId) {
+    await prisma.event.update({
+      where: { id: user?.currentEventId },
+      data: { endTime: new Date() },
+    });
+
+    await prisma.user.update({
+      where: { id: USER_ID },
+      data: {
+        currentEvent: { disconnect: true },
+      },
+    });
+  }
+  res.sendStatus(200);
+});
+
+// Init frontend state
+app.get("/me", async (req, res) => {
+  const me = await prisma.user.findFirst({
+    where: { id: USER_ID },
+    include: { currentEvent: true, activities: true },
+  });
+
+  res.send(me);
+});
+
 if (!process.env.IS_LOCAL_DEV) {
   const httpsServer = https.createServer(
     {

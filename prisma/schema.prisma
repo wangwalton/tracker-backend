@@ -21,9 +21,9 @@ model Activity {
 model Event {
     id      Int      @id @default(autoincrement())
     activity Activity  @relation(fields: [activityId], references: [id])
-    activityId Int     @unique
+    activityId Int     
     startTime DateTime @default(now())
-    endTime DateTime
+    endTime DateTime?
     users User?
 
 }
@@ -36,5 +36,5 @@ model User {
   activities   Activity[]
 
   currentEvent Event? @relation(fields: [currentEventId], references: [id])
-  currentEventId Int?     @unique  
+  currentEventId Int?     @unique
 }
