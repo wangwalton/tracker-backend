@@ -7,3 +7,5 @@ npx prisma migrate deploy
 
 tsc
 sudo node dist/index.js
+
+ sudo /home/ubuntu/.nvm/versions/node/v18.2.0/bin/pm2 start
