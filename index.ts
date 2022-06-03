@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import cors from "cors";
 import { config } from "dotenv-safe";
 import express from "express";
 import fs from "fs";
 import https from "https";
+
 var morgan = require("morgan");
 
 const result = config();
@@ -13,6 +15,8 @@ const prisma = new PrismaClient();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
 app.use(
   morgan(
     ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'
@@ -56,7 +60,10 @@ app.post("/activity/delete", async (req, res) => {
     return;
   }
 
-  await prisma.activity.delete({ where: { id: req.body.input?.id } });
+  await prisma.activity.update({
+    where: { id: req.body.input?.id },
+    data: { isDeleted: true },
+  });
   res.sendStatus(200);
 });
 
@@ -115,7 +122,10 @@ app.post("/event/end", async (req, res) => {
 app.get("/me", async (req, res) => {
   const me = await prisma.user.findFirst({
     where: { id: USER_ID },
-    include: { currentEvent: true, activities: true },
+    include: {
+      currentEvent: true,
+      activities: { where: { isDeleted: false } },
+    },
   });
 
   res.send(me);

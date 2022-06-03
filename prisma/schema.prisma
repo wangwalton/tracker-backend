@@ -16,6 +16,7 @@ model Activity {
   events Event[]
   user   User    @relation(fields: [userId], references: [id])
   userId Int
+  isDeleted Boolean @default(false)
 }
 
 model Event {
